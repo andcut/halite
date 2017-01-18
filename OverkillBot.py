@@ -26,8 +26,9 @@ def heuristic(square):
         return square.production / square.strength
     else:
         # return total potential damage caused by overkill when attacking this square
-        return sum(neighbor.strength for neighbor in game_map.neighbors(square) if neighbor.owner not in (0, myID))
-
+        overkillval = sum(min(neighbor.strength, square.strength) for neighbor in game_map.neighbors(square) if neighbor.owner not in (0, myID))
+        spaceval = square.strength + square.strength * (square.owner != 0) * (square.owner != myID)
+        
 def get_move(square):
     target, direction = max(((neighbor, direction) for direction, neighbor in enumerate(game_map.neighbors(square))
                                 if neighbor.owner != myID),
@@ -36,6 +37,7 @@ def get_move(square):
     if target is not None and target.strength < square.strength:
         return Move(square, direction)
     elif square.strength < square.production * 5:
+        #add combine functionality (at border)
         return Move(square, STILL)
 
     border = any(neighbor.owner != myID for neighbor in game_map.neighbors(square))
